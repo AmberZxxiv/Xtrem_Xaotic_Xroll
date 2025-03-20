@@ -17,9 +17,10 @@ public class PLAYER_MOVEMENT : MonoBehaviour
     public float playerPos;
     public TextMeshProUGUI locationText;
     public GameObject playerWeapon;
-    public ENEMY_CONTROLLER ENEMY_CONTROLLER;
+    public MINION_CONTROLLER MINION_CONTROLLER;
     public GameObject drop;
     public int _dropCount;
+    public TextMeshProUGUI resourceCounter;
 
     // Start is called before the first frame update
     void Start()
@@ -37,15 +38,32 @@ public class PLAYER_MOVEMENT : MonoBehaviour
         minimap.value = playerPos;
         locationText.text = playerPos.ToString("F0");
 
-        // Movimiento de lao a lao con su velocidad y el límite de saltos
         float direction = Input.GetAxis("Horizontal");
+        if (direction != 0) // Mambiar la direccion del sprite segun su desplazamiento
+        {
+            FlipSprite(direction);
+        }
         _rb.velocity = new Vector2(vel * direction, _rb.velocity.y);
-        if (Input.GetKeyDown(KeyCode.Space) && _jumpCount <= 0)
+        if (Input.GetKeyDown(KeyCode.Space) && _jumpCount <= 0) // Movimiento basico del jugador
         {
             _rb.velocity = new Vector2(_rb.velocity.x, jumpForce);
             _jumpCount++;
         }
     }
+    void FlipSprite(float direction)
+    {
+        // Si el player se mueve a la izquierda -1
+        if (direction < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1); // Mscala invertida en vertical (flip)
+        }
+        // Si el player se mueve a la derecha +1
+        else if (direction > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1); // Mantener la escala original
+        }
+    }
+
 
     // Comprobamos los colliders y sus tags
     public void OnCollisionEnter2D(Collision2D collision)
@@ -89,8 +107,8 @@ public class PLAYER_MOVEMENT : MonoBehaviour
         // Si estamos dentro de un enemigo, hacemos clic y llamamos al conteo de vida del enemigo
         if(other.tag == "ENEMY" && Input.GetMouseButton(0)) 
         {
+            other.gameObject.GetComponent<MINION_CONTROLLER>().GetDamage();
             print("BONK");
-            other.gameObject.GetComponent<ENEMY_CONTROLLER>().GetDamage();
             //aqui si deja apretao se ejecuta 1000 veces por segundo, añade algun tipo de cooldown crack
         }
 
@@ -99,7 +117,8 @@ public class PLAYER_MOVEMENT : MonoBehaviour
         {
             _dropCount += 10;
             print(_dropCount);
-            Destroy(drop);
+            Destroy(other.gameObject);
+            resourceCounter.text = _dropCount.ToString("F0");
         }
     }
 }

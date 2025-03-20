@@ -2,20 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ENEMY_CONTROLLER : MonoBehaviour
+public class MINION_CONTROLLER : MonoBehaviour
 {
-    public float enemyHealth;
+    public float minionHealth;
     public GameObject drop;
     // Start is called before the first frame update
     void Start()
     {
-        enemyHealth = 10;
+        minionHealth = 10;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (enemyHealth <= 0)
+        if (minionHealth <= 0)
         {
             //aqui agrega cosas de soltar objetos y dineros y eso, se hace antes de que se destruya el objeto
             //Instantiate(drop, transform.position, Quaternion.identity); NO LO ACTIVES QUE SPAWNEA SIN 
@@ -27,20 +27,18 @@ public class ENEMY_CONTROLLER : MonoBehaviour
 
     public void GetDamage()
     {
-        enemyHealth -= 2;
+        minionHealth -= 2;
     }
     public void GenerateDrop()
     {
         // Generar drop en la posición del enemigo
         Instantiate(drop, transform.position, Quaternion.identity);
     }
-    private IEnumerator Dropear()
+    private IEnumerator Dropear() // Corrutina para crear un drop al morir un enemigo
     {
-        yield return new WaitForSeconds(0.2f);
-        print("mecago");
+        yield return new WaitForSeconds(0.0f);
         GenerateDrop();
-        Instantiate(drop, transform.position, Quaternion.identity);
-        Destroy(gameObject);
+        Destroy(this.gameObject);
     }
 
 }
